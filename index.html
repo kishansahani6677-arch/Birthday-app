@@ -505,4 +505,105 @@ Aafno khyal rakhnu, sadhai smile gardai garnu. Once again, Happy Birthday! ‚ù§Ô∏
         const nepaliBhadra13Dates = { 2024: {m:7, d:29}, 2025: {m:7, d:29}, 2026: {m:7, d:29}, 2027: {m:7, d:30} };
         const targetConfig = nepaliBhadra13Dates[currentYear] || {m: 7, d: 29};
         
-        let thisYearBirthday = new Date(currentYear, targetConfig
+        let thisYearBirthday = new Date(currentYear, targetConfig.m, targetConfig.d, 0, 0, 0, 0);
+        
+        if (today < thisYearBirthday) age--;
+        document.getElementById("currentAge").innerText = age + " Years";
+        
+        let nextBirthday = thisYearBirthday;
+        if (today >= new Date(currentYear, targetConfig.m, targetConfig.d + 1, 0, 0, 0, 0)) {
+            const nextYearConfig = nepaliBhadra13Dates[currentYear + 1] || {m: 7, d: 29};
+            nextBirthday = new Date(currentYear + 1, nextYearConfig.m, nextYearConfig.d, 0, 0, 0, 0);
+        }
+        
+        const diff = nextBirthday - today;
+        if (diff <= 0 && isNepaliBhadra13(today)) {
+            document.getElementById("countdownTimer").innerText = "0d 0h 0m";
+        } else {
+            const d = Math.floor(diff / (1000*60*60*24));
+            const h = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+            const m = Math.floor((diff % (1000*60*60)) / (1000*60));
+            document.getElementById("countdownTimer").innerText = `${d}d ${h}h ${m}m`;
+        }
+        
+        let kishanAge = currentYear - 2010;
+        const nepaliShrawan16Dates = { 2024: new Date(2024, 6, 31), 2025: new Date(2025, 6, 31), 2026: new Date(2026, 6, 31), 2027: new Date(2027, 7, 1) };
+        const thisYearShrawan16 = nepaliShrawan16Dates[currentYear] || new Date(currentYear, 6, 31);
+        if (today < thisYearShrawan16) kishanAge--;
+        document.getElementById("creatorAge").innerText = kishanAge;
+    }
+
+    function loadMemories() {
+        const memoriesData = [
+            // Photos (Corrected to match GitHub filenames)
+            { "type": "image", "url": "IMG_20260827_205556.jpg" },
+            { "type": "image", "url": "IMG_20260827_225309.jpg" },
+            { "type": "image", "url": "IMG_20260827_225319.jpg" },
+            { "type": "image", "url": "IMG_20260827_225336.jpg" },
+            { "type": "image", "url": "IMG_20260827_225347.jpg" },
+            { "type": "image", "url": "IMG_20260827_225356.jpg" },
+            { "type": "image", "url": "IMG_20260827_225409.jpg" },
+            { "type": "image", "url": "IMG_20260827_225425.jpg" },
+            { "type": "image", "url": "IMG_20260827_225439.jpg" },
+            { "type": "image", "url": "IMG_20260827_225453.jpg" },
+            { "type": "image", "url": "IMG_20260827_225510.jpg" },
+            { "type": "image", "url": "IMG_20260827_225518.jpg" },
+            { "type": "image", "url": "IMG_20260827_225526.jpg" },
+            { "type": "image", "url": "IMG_20260827_225534.jpg" },
+            { "type": "image", "url": "IMG_20260827_225543.jpg" },
+            { "type": "image", "url": "IMG_20260827_225601.jpg" },
+            { "type": "image", "url": "IMG_20260827_225611.jpg" },
+
+            // Videos (Corrected to match GitHub filenames)
+            { "type": "video", "url": "VID_20260827_100317_941.mp4" },
+            { "type": "video", "url": "VID_20260827_100318_265.mp4" },
+            { "type": "video", "url": "VID_20260827_100324_397.mp4" },
+            { "type": "video", "url": "VID_20260827_100328_094.mp4" },
+            { "type": "video", "url": "VID_20260827_100331_190.mp4" },
+            { "type": "video", "url": "VID_20260827_100334_520.mp4" },
+            { "type": "video", "url": "VID_20260827_100334_523.mp4" },
+            { "type": "video", "url": "VID_20260827_100337_589.mp4" },
+            { "type": "video", "url": "VID_20260827_100337_592.mp4" },
+            { "type": "video", "url": "VID_20260827_100344_393.mp4" },
+            { "type": "video", "url": "VID_20260827_100346_453.mp4" }
+        ];
+
+        const grid = document.getElementById('memoriesGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        memoriesData.forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'image-item';
+            if (item.type === 'image') {
+                itemDiv.innerHTML = `<img src="${item.url}" alt="Memory" loading="lazy" onclick="openModal('${item.url}')">`;
+            } else if (item.type === 'video') {
+                itemDiv.innerHTML = `<video src="${item.url}" controls preload="metadata"></video>`;
+            }
+            grid.appendChild(itemDiv);
+        });
+    }
+
+    function openModal(src) {
+        document.getElementById("fullImage").src = src;
+        document.getElementById("imageModal").style.display = "flex";
+    }
+    function closeModal() {
+        document.getElementById("imageModal").style.display = "none";
+    }
+
+    if ("Notification" in window && Notification.permission === "granted") {
+        const btn = document.getElementById("enableBtn");
+        if (btn) btn.style.display = "none";
+    }
+    
+    setInterval(() => {
+        updateAgeAndCountdown();
+        checkNepaliBirthday();
+    }, 1000);
+    
+    updateAgeAndCountdown();
+    checkNepaliBirthday();
+    loadMemories();
+</script>
+</body>
+</html>
