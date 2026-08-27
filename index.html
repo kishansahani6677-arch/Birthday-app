@@ -14,21 +14,18 @@
     <meta name="apple-mobile-web-app-title" content="BirthdayApp">
     
     <style>
-        /* Animated Gradient Background */
+        /* Background Image with Dark Overlay */
         body { 
             font-family: 'Segoe UI', sans-serif; 
-            background: linear-gradient(-45deg, #e0c3fc, #8ec5fc, #fbc2eb, #a18cd1); 
-            background-size: 400% 400%;
-            animation: gradientBG 12s ease infinite;
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('IMG_20260827_205556.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
             margin: 0; 
             padding: 0; 
             padding-bottom: 70px; 
             user-select: none;
-        }
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
         }
         
         .tab-content { 
@@ -504,38 +501,4 @@ Aafno khyal rakhnu, sadhai smile gardai garnu. Once again, Happy Birthday! â¤ï¸
         if (!grid) return;
         grid.innerHTML = '';
         memoriesData.forEach(item => {
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'image-item';
-            if (item.type === 'image') {
-                itemDiv.innerHTML = `<img src="${item.url}" alt="Memory" loading="lazy" onclick="openModal('${item.url}')">`;
-            } else if (item.type === 'video') {
-                itemDiv.innerHTML = `<video src="${item.url}" controls preload="metadata"></video>`;
-            }
-            grid.appendChild(itemDiv);
-        });
-    }
-
-    function openModal(src) {
-        document.getElementById("fullImage").src = src;
-        document.getElementById("imageModal").style.display = "flex";
-    }
-    function closeModal() {
-        document.getElementById("imageModal").style.display = "none";
-    }
-
-    if ("Notification" in window && Notification.permission === "granted") {
-        const btn = document.getElementById("enableBtn");
-        if (btn) btn.style.display = "none";
-    }
-    
-    setInterval(() => {
-        updateAgeAndCountdown();
-        checkNepaliBirthday();
-    }, 1000);
-    
-    updateAgeAndCountdown();
-    checkNepaliBirthday();
-    loadMemories();
-</script>
-</body>
-</html>
+            const itemDiv = document.createEleme
