@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday App</title>
+    
+    <!-- PWA Settings -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff4081">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BirthdayApp">
+    
+    <style>
+        /* Animated Gradient Background */
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: linear-gradient(-45deg, #e0c3fc, #8ec5fc, #fbc2eb, #a18cd1); 
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+            margin: 0; 
+            padding: 0; 
+            padding-bottom: 70px; 
+            user-select: none;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .tab-content { 
+            display: none; 
+            padding: 20px; 
+        }
+        
+        .active-tab { 
+            display: block; 
+            animation: slideUpFade 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; 
+        } 
+        
+        @keyframes slideUpFade { 
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        .container { 
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(10px);
+            padding: 20px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+            text-align: center; 
+            margin: 20px auto; 
+            max-width: 400px; 
+            animation: containerPop 0.6s ease-out;
+        }
+        @keyframes containerPop {
+            0% { transform: scale(0.95); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* 24 Hours Birthday Banner */
+        .birthday-banner {
+            display: none;
+            background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+            color: white;
+            padding: 18px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.6;
+            text-align: left;
+            white-space: pre-line;
+            box-shadow: 0 6px 18px rgba(255, 117, 140, 0.4);
+            animation: pulseGlow 1.5s infinite alternate;
+        }
+        
+        .navbar { 
+            position: fixed; 
+            bottom: 0; 
+            width: 100%; 
+            background: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(8px);
+            display: flex; 
+            border-top: 1px solid #ddd; 
+            height: 60px; 
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05); 
+            z-index: 1000; 
+        }
+        .nav-btn { 
+            flex: 1; 
+            border: none; 
+            background: none; 
+            font-size: 14px; 
+            font-weight: bold; 
+            color: #888; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            position: relative;
+        }
+        .nav-btn.active { 
+            color: #ff4081; 
+        }
+        .nav-btn.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20%;
+            width: 60%;
+            height: 3px;
+            background: #ff4081;
+            border-radius: 0 0 5px 5px;
+            animation: navLine 0.3s ease forwards;
+        }
+        @keyframes navLine {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+        }
+        .info-box { 
+            background-color: #f5f7fa; 
+            border-radius: 12px; 
+            padding: 15px; 
+            margin: 15px 0; 
+            border-left: 5px solid #74ebd5; 
+            text-align: left; 
+            transition: transform 0.3s ease;
+        }
+        .info-box:hover {
+            transform: translateX(3px);
+        }
+        .status { 
+            margin-top: 20px; 
+            padding: 12px; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            transition: all 0.4s ease;
+        }
+        .waiting { background-color: #e1f5fe; color: #0288d1; }
+        .birthday { 
+            background-color: #e8f5e9; 
+            color: #2e7d32; 
+            animation: pulseGlow 1.5s infinite alternate;
+        }
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 5px rgba(46, 125, 50, 0.2); }
+            100% { box-shadow: 0 0 15px rgba(46, 125, 50, 0.6); }
+        }
+        .btn-permission { 
+            background-color: #ff4081; 
+            color: white; 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 25px; 
+            cursor: pointer; 
+            margin-top: 15px; 
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(255, 64, 129, 0.3);
+            transition: all 0.3s ease;
+        }
+        .btn-permission:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 64, 129, 0.4);
+        }
+        
+        /* Music Player Styles */
+        .music-card { 
+            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); 
+            padding: 18px; 
+            border-radius: 15px; 
+            margin-top: 15px; 
+            color: white; 
+            text-align: left; 
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08); 
+        }
+        .music-title { font-weight: bold; margin: 0 0 5px 0; font-size: 16px; }
+        .music-controls { display: flex; align-items: center; gap: 15px; margin-top: 10px; }
+        
+        .play-btn { 
+            background: white; 
+            color: #a18cd1; 
+            border: none; 
+            border-radius: 50%; 
+            width: 42px; 
+            height: 42px; 
+            font-weight: bold; 
+            font-size: 18px; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15); 
+        }
+        .progress-container { 
+            flex: 1; 
+            height: 6px; 
+            background: rgba(255,255,255,0.3); 
+            border-radius: 3px; 
+            position: relative; 
+            cursor: pointer; 
+            overflow: hidden;
+        }
+        .progress-bar { 
+            width: 0%; 
+            height: 100%; 
+            background: white; 
+            border-radius: 3px; 
+        }
+        
+        .image-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .image-item { 
+            width: 100%; 
+            height: 160px; 
+            background: #f0f2f5; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+        .image-item img, .image-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+        
+        .about-text { text-align: left; line-height: 1.6; color: #444; }
+        .email-link { color: #ff4081; text-decoration: none; font-weight: bold; }
+        .insta-link-about {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        .insta-icon { width: 16px; height: 16px; fill: currentColor; }
+
+        /* Fullscreen Lightbox */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            max-width: 90%;
+            max-height: 85%;
+            border-radius: 12px;
+            object-fit: contain;
+        }
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            color: white;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<!-- HOME TAB -->
+<div id="home" class="tab-content active-tab">
+    <div class="container">
+        <!-- 24-Hour Birthday Banner -->
+        <div id="birthdayBanner" class="birthday-banner">
+KISHAN: Happy Birthday Bauni ! ❤️🎂
+
+Aile hami ekdam tadha chau, ra honestly bhannu parda, yo kura le ali emotional feel huncha. Time le dherai kura change gardiyo, hami pahila jasto close nahola, kura pani kam hola, tara timro lagi mero best wishes kahile pani change hudaina.
+
+I genuinely hope timi life ma ramro gardai chau, khusi chau, healthy chau, ani timilai sadhai care garne manche haru timro around ma hun. ❤️ Timi le life ma j j achieve garna chahanchau, tyo sabai achieve garna sakos bhanera wish garchu.
+
+Hami bich jati distance bhaye pani, sangai बिताएका memories haru sadhai special nai rahanechan. 🥹 I hope timro life ko yo naya year le timilai dherai happiness, success ra beautiful moments lyawos.
+
+Aafno khyal rakhnu, sadhai smile gardai garnu. Once again, Happy Birthday! ❤️✨ I really hope you're doing good in life.
+        </div>
+        
+        <h1>My Annual Birthday Wishes to You</h1>
+        <div class="info-box">
+            <p>🎂 Current Age: <strong id="currentAge">Calculating...</strong></p>
+            <p>⏳ Next Birthday: <strong id="countdownTimer">Calculating...</strong></p>
+        </div>
+        
+        <!-- MUSIC PLAYER -->
+        <div class="music-card">
+            <p class="music-title">Young and Beautiful</p>
+            <div class="music-controls">
+                <button class="play-btn" id="playBtn" onclick="toggleMusic()">▶</button>
+                <div class="progress-container" onclick="seekMusic(event)">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+            <audio id="bgMusic" src="Young_and_beautiful_-_Lana_del_Rey__Slowed_reverb_(144p).m4a" preload="auto"></audio>
+        </div>
+        
+        <button class="btn-permission" id="enableBtn" onclick="requestPermission()">Enable Birthday Notifications</button>
+        <div id="statusBox" class="status waiting">Checking Status...</div>
+    </div>
+</div>
+
+<!-- MEMORIES TAB -->
+<div id="memories" class="tab-content">
+    <div class="container">
+        <h2>MEMORIES.💝</h2>
+        <div class="image-grid" id="memoriesGrid"></div>
+    </div>
+</div>
+
+<!-- ABOUT TAB -->
+<div id="about" class="tab-content">
+    <div class="container">
+        <h2>About Me</h2>
+        <div class="about-text">
+            <p>Hello! This web app was created by <strong>Kishan Sahani</strong>. I am currently <strong id="creatorAge">15</strong> years old, and my passion is to build simple and useful digital tools that make life easier.</p>
+            <p>This app is specifically designed for <strong>birthday wishing</strong>, using precise Nepali calendar logic to ensure you never miss celebrating your special ones.</p>
+            <hr>
+            <p><strong>Contact Us:</strong></p>
+            <p><a href="mailto:kishansahani991010@gmail.com" class="email-link">kishansahani991010@gmail.com</a></p>
+            <p style="margin-top: 10px;">
+                <a href="https://www.instagram.com/kishan_sahani487?igsh=MWJraTM0ZTZTZXE1bA==" target="_blank" class="insta-link-about">
+                    <svg class="insta-icon" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    Follow on Instagram
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- FULLSCREEN MODAL -->
+<div id="imageModal" class="modal" onclick="closeModal()">
+    <span class="close-btn">&times;</span>
+    <img class="modal-content" id="fullImage">
+</div>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <button class="nav-btn active" onclick="switchTab('home', this)">Home</button>
+    <button class="nav-btn" onclick="switchTab('memories', this)">Memories</button>
+    <button class="nav-btn" onclick="switchTab('about', this)">About</button>
+</div>
+
+<script>
+    // 1. Register PWA Service Worker
+    let swRegistration = null;
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => {
+                    swRegistration = reg;
+                    console.log('Service Worker Registered!');
+                })
+                .catch(err => console.log('SW Registration Failed:', err));
+        });
+    }
+
+    // Music Player Logic
+    const audio = document.getElementById("bgMusic");
+    const playBtn = document.getElementById("playBtn");
+    const progressBar = document.getElementById("progressBar");
+    
+    function toggleMusic() {
+        if (audio.paused) {
+            audio.play().then(() => playBtn.innerText = "⏸")
+            .catch(() => alert("Tap screen first, then play!"));
+        } else {
+            audio.pause();
+            playBtn.innerText = "▶";
+        }
+    }
+    audio.addEventListener("timeupdate", () => {
+        if (audio.duration) progressBar.style.width = (audio.currentTime / audio.duration) * 100 + "%";
+    });
+    function seekMusic(event) {
+        const rect = event.currentTarget.getBoundingClientRect();
+        if (audio.duration) audio.currentTime = ((event.clientX - rect.left) / rect.width) * audio.duration;
+    }
+    
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active-tab');
+        btn.classList.add('active');
+    }
+    
+    // Request Notification Permission & Schedule Yearly Check
+    function requestPermission() {
+        if (!("Notification" in window)) {
+            alert("Notification support is missing in this browser.");
+            return;
+        }
+        
+        Notification.requestPermission().then(permission => {
+            if (permission === "granted") {
+                alert("Birthday notifications enabled! You will get notified every year on Bhadra 13.");
+                document.getElementById("enableBtn").style.display = "none";
+                triggerBirthdayNotificationIfToday();
+            } else {
+                alert("Permission denied.");
+            }
+        });
+    }
+
+    function getNepaliNow() {
+        const now = new Date();
+        const utcMs = now.getTime() + (now.getTimezoneOffset() * 60000);
+        return new Date(utcMs + (345 * 60000));
+    }
+    
+    function isNepaliBhadra13(adDate) {
+        const year = adDate.getFullYear();
+        const month = adDate.getMonth() + 1;
+        const day = adDate.getDate();
+        const nepaliBhadra13Dates = { 2024: {m:8, d:29}, 2025: {m:8, d:29}, 2026: {m:8, d:29}, 2027: {m:8, d:30} };
+        const target = nepaliBhadra13Dates[year] || { m: 8, d: 29 };
+        return (month === target.m && day === target.d);
+    }
+    
+    function triggerBirthdayNotificationIfToday() {
+        const today = getNepaliNow();
+        const isToday = isNepaliBhadra13(today);
+        const currentYearKey = "notif_sent_" + today.getFullYear();
+
+        if (isToday && Notification.permission === "granted" && !localStorage.getItem(currentYearKey)) {
+            const notifTitle = "Happy Birthday Bauni! ❤️🎂";
+            const notifBody = "KISHAN: Aile hami ekdam tadha chau, tara timro lagi mero best wishes kahile pani change hudaina. Hope your year brings happiness & success!";
+            
+            if (swRegistration) {
+                swRegistration.showNotification(notifTitle, {
+                    body: notifBody,
+                    icon: "https://cdn-icons-png.flaticon.com/512/3159/3159408.png"
+                });
+            } else {
+                new Notification(notifTitle, { body: notifBody });
+            }
+            localStorage.setItem(currentYearKey, "true");
+        }
+    }
+    
+    function checkNepaliBirthday() {
+        const today = getNepaliNow();
+        const statusBox = document.getElementById("statusBox");
+        const banner = document.getElementById("birthdayBanner");
+        
+        if (isNepaliBhadra13(today)) {
+            statusBox.className = "status birthday";
+            statusBox.innerHTML = "🎉 Happy Birthday!";
+            banner.style.display = "block";
+            triggerBirthdayNotificationIfToday();
+        } else {
+            statusBox.className = "status waiting";
+            statusBox.innerHTML = "⏳ Waiting for the big day...";
+            banner.style.display = "none";
+        }
+    }
+    
+    function updateAgeAndCountdown() {
+        const today = getNepaliNow();
+        const currentYear = today.getFullYear();
+        let age = (currentYear + 57) - 2068;
+        const thisYearBirthday = new Date(currentYear, 7, 29);
+        if (today < thisYearBirthday) age--;
+        document.getElementById("currentAge").innerText = age + " Years";
+        let nextBirthday = thisYearBirthday;
+        if (today > nextBirthday) nextBirthday = new Date(currentYear + 1, 7, 29);
+        const diff = nextBirthday - today;
+        const d = Math.floor(diff / (1000*60*60*24));
+        const h = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+        document.getElementById("countdownTimer").innerText = `${d}d ${h}h`;
+        
+        let kishanAge = currentYear - 2010;
+        const nepaliShrawan16Dates = { 2024: new Date(2024, 6, 31), 2025: new Date(2025, 6, 31), 2026: new Date(2026, 6, 31), 2027: new Date(2027, 7, 1) };
+        const thisYearShrawan16 = nepaliShrawan16Dates[currentYear] || new Date(currentYear, 6, 31);
+        if (today < thisYearShrawan16) kishanAge--;
+        document.getElementById("creatorAge").innerText = kishanAge;
+    }
+
+    function loadMemories() {
+        const memoriesData = [
+            { "type": "image", "url": "photo1.jpg" },
+            { "type": "video", "url": "video1.mp4" }
+        ];
+
+        const grid = document.getElementById('memoriesGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        memoriesData.forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'image-item';
+            if (item.type === 'image') {
+                itemDiv.innerHTML = `<img src="${item.url}" alt="Memory" loading="lazy" onclick="openModal('${item.url}')">`;
+            } else if (item.type === 'video') {
+                itemDiv.innerHTML = `<video src="${item.url}" controls preload="metadata"></video>`;
+            }
+            grid.appendChild(itemDiv);
+        });
+    }
+
+    function openModal(src) {
+        document.getElementById("fullImage").src = src;
+        document.getElementById("imageModal").style.display = "flex";
+    }
+    function closeModal() {
+        document.getElementById("imageModal").style.display = "none";
+    }
+
+    if ("Notification" in window && Notification.permission === "granted") {
+        const btn = document.getElementById("enableBtn");
+        if (btn) btn.style.display = "none";
+    }
+    
+    setInterval(() => {
+        updateAgeAndCountdown();
+        checkNepaliBirthday();
+    }, 1000);
+    
+    updateAgeAndCountdown();
+    checkNepaliBirthday();
+    loadMemories();
+</script>
+</body>
+</html>
