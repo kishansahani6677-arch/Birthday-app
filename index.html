@@ -314,6 +314,7 @@ Aafno khyal rakhnu, sadhai smile gardai garnu. Once again, Happy Birthday! ‚ù§Ô∏
         </div>
         
         <button class="btn-permission" id="enableBtn" onclick="requestPermission()">Enable Birthday Notifications</button>
+        <button class="btn-permission" id="installBtn" style="display:none; background-color:#2e7d32;" onclick="installApp()">üì≤ Add to Home Screen</button>
         <div id="statusBox" class="status waiting">Checking Status...</div>
     </div>
 </div>
@@ -360,8 +361,10 @@ Aafno khyal rakhnu, sadhai smile gardai garnu. Once again, Happy Birthday! ‚ù§Ô∏
 </div>
 
 <script>
-    // 1. Register PWA Service Worker
+    // 1. Register PWA Service Worker & Add to Home Screen Prompt
     let swRegistration = null;
+    let deferredPrompt;
+
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js')
@@ -371,6 +374,25 @@ Aafno khyal rakhnu, sadhai smile gardai garnu. Once again, Happy Birthday! ‚ù§Ô∏
                 })
                 .catch(err => console.log('SW Registration Failed:', err));
         });
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        const installBtn = document.getElementById('installBtn');
+        if (installBtn) installBtn.style.display = 'inline-block';
+    });
+
+    function installApp() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    document.getElementById('installBtn').style.display = 'none';
+                }
+                deferredPrompt = null;
+            });
+        }
     }
 
     // Music Player Logic
@@ -496,8 +518,35 @@ Aafno khyal rakhnu, sadhai smile gardai garnu. Once again, Happy Birthday! ‚ù§Ô∏
 
     function loadMemories() {
         const memoriesData = [
-            { "type": "image", "url": "photo1.jpg" },
-            { "type": "video", "url": "video1.mp4" }
+            // Photos
+            { "type": "image", "url": "IMG_20260827_225611.jpg" },
+            { "type": "image", "url": "IMG_20260827_225601.jpg" },
+            { "type": "image", "url": "IMG_20260827_225543.jpg" },
+            { "type": "image", "url": "IMG_20260827_225526.jpg" },
+            { "type": "image", "url": "IMG_20260827_225518.jpg" },
+            { "type": "image", "url": "IMG_20260827_225510.jpg" },
+            { "type": "image", "url": "IMG_20260827_225453.jpg" },
+            { "type": "image", "url": "IMG_20260827_225439.jpg" },
+            { "type": "image", "url": "IMG_20260827_225425.jpg" },
+            { "type": "image", "url": "IMG_20260827_225356.jpg" },
+            { "type": "image", "url": "IMG_20260827_225347.jpg" },
+            { "type": "image", "url": "IMG_20260827_225409.jpg" },
+            { "type": "image", "url": "IMG_20260827_225336.jpg" },
+            { "type": "image", "url": "IMG_20260827_225319.jpg" },
+            { "type": "image", "url": "IMG_20260827_225309.jpg" },
+
+            // Videos
+            { "type": "video", "url": "VID_20260827_100346_453.mp4" },
+            { "type": "video", "url": "VID_20260827_100337_592.mp4" },
+            { "type": "video", "url": "VID_20260827_100337_585.mp4" },
+            { "type": "video", "url": "VID_20260827_100344_393.mp4" },
+            { "type": "video", "url": "VID_20260827_100334_523.mp4" },
+            { "type": "video", "url": "VID_20260827_100334_520.mp4" },
+            { "type": "video", "url": "VID_20260827_100331_190.mp4" },
+            { "type": "video", "url": "VID_20260827_100324_397.mp4" },
+            { "type": "video", "url": "VID_20260827_100315_265.mp4" },
+            { "type": "video", "url": "VID_20260827_100317_941.mp4" },
+            { "type": "video", "url": "VID_20260827_100323_094.mp4" }
         ];
 
         const grid = document.getElementById('memoriesGrid');
