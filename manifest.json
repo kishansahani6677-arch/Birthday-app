@@ -1,6 +1,6 @@
-    {
-  "name": " MEN WISH TO YOU ",
-  "short_name": "BirthdayApp",
+{
+  "name": "MEN WISH TO YOU",
+  "short_name": "MEN WISH TO YOU",
   "description": "Annual Birthday Wishes & Memories",
   "start_url": "./index.html",
   "display": "standalone",
@@ -20,3 +20,4 @@
     }
   ]
 }
+
