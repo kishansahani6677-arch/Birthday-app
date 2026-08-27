@@ -442,10 +442,11 @@ Aafno khyal rakhnu, sadhai smile gardai garnu. Once again, Happy Birthday! ‚ù§Ô∏
         });
     }
 
+    // Exact Nepal Time Calculation (UTC + 5 hours 45 mins)
     function getNepaliNow() {
         const now = new Date();
         const utcMs = now.getTime() + (now.getTimezoneOffset() * 60000);
-        return new Date(utcMs + (345 * 60000));
+        return new Date(utcMs + ((5 * 60 + 45) * 60000));
     }
     
     function isNepaliBhadra13(adDate) {
@@ -499,92 +500,9 @@ Aafno khyal rakhnu, sadhai smile gardai garnu. Once again, Happy Birthday! ‚ù§Ô∏
         const today = getNepaliNow();
         const currentYear = today.getFullYear();
         let age = (currentYear + 57) - 2068;
-        const thisYearBirthday = new Date(currentYear, 7, 29);
-        if (today < thisYearBirthday) age--;
-        document.getElementById("currentAge").innerText = age + " Years";
-        let nextBirthday = thisYearBirthday;
-        if (today > nextBirthday) nextBirthday = new Date(currentYear + 1, 7, 29);
-        const diff = nextBirthday - today;
-        const d = Math.floor(diff / (1000*60*60*24));
-        const h = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
-        document.getElementById("countdownTimer").innerText = `${d}d ${h}h`;
         
-        let kishanAge = currentYear - 2010;
-        const nepaliShrawan16Dates = { 2024: new Date(2024, 6, 31), 2025: new Date(2025, 6, 31), 2026: new Date(2026, 6, 31), 2027: new Date(2027, 7, 1) };
-        const thisYearShrawan16 = nepaliShrawan16Dates[currentYear] || new Date(currentYear, 6, 31);
-        if (today < thisYearShrawan16) kishanAge--;
-        document.getElementById("creatorAge").innerText = kishanAge;
-    }
-
-    function loadMemories() {
-        const memoriesData = [
-            // Photos
-            { "type": "image", "url": "IMG_20260827_225611.jpg" },
-            { "type": "image", "url": "IMG_20260827_225601.jpg" },
-            { "type": "image", "url": "IMG_20260827_225543.jpg" },
-            { "type": "image", "url": "IMG_20260827_225526.jpg" },
-            { "type": "image", "url": "IMG_20260827_225518.jpg" },
-            { "type": "image", "url": "IMG_20260827_225510.jpg" },
-            { "type": "image", "url": "IMG_20260827_225453.jpg" },
-            { "type": "image", "url": "IMG_20260827_225439.jpg" },
-            { "type": "image", "url": "IMG_20260827_225425.jpg" },
-            { "type": "image", "url": "IMG_20260827_225356.jpg" },
-            { "type": "image", "url": "IMG_20260827_225347.jpg" },
-            { "type": "image", "url": "IMG_20260827_225409.jpg" },
-            { "type": "image", "url": "IMG_20260827_225336.jpg" },
-            { "type": "image", "url": "IMG_20260827_225319.jpg" },
-            { "type": "image", "url": "IMG_20260827_225309.jpg" },
-
-            // Videos
-            { "type": "video", "url": "VID_20260827_100346_453.mp4" },
-            { "type": "video", "url": "VID_20260827_100337_592.mp4" },
-            { "type": "video", "url": "VID_20260827_100337_585.mp4" },
-            { "type": "video", "url": "VID_20260827_100344_393.mp4" },
-            { "type": "video", "url": "VID_20260827_100334_523.mp4" },
-            { "type": "video", "url": "VID_20260827_100334_520.mp4" },
-            { "type": "video", "url": "VID_20260827_100331_190.mp4" },
-            { "type": "video", "url": "VID_20260827_100324_397.mp4" },
-            { "type": "video", "url": "VID_20260827_100315_265.mp4" },
-            { "type": "video", "url": "VID_20260827_100317_941.mp4" },
-            { "type": "video", "url": "VID_20260827_100323_094.mp4" }
-        ];
-
-        const grid = document.getElementById('memoriesGrid');
-        if (!grid) return;
-        grid.innerHTML = '';
-        memoriesData.forEach(item => {
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'image-item';
-            if (item.type === 'image') {
-                itemDiv.innerHTML = `<img src="${item.url}" alt="Memory" loading="lazy" onclick="openModal('${item.url}')">`;
-            } else if (item.type === 'video') {
-                itemDiv.innerHTML = `<video src="${item.url}" controls preload="metadata"></video>`;
-            }
-            grid.appendChild(itemDiv);
-        });
-    }
-
-    function openModal(src) {
-        document.getElementById("fullImage").src = src;
-        document.getElementById("imageModal").style.display = "flex";
-    }
-    function closeModal() {
-        document.getElementById("imageModal").style.display = "none";
-    }
-
-    if ("Notification" in window && Notification.permission === "granted") {
-        const btn = document.getElementById("enableBtn");
-        if (btn) btn.style.display = "none";
-    }
-    
-    setInterval(() => {
-        updateAgeAndCountdown();
-        checkNepaliBirthday();
-    }, 1000);
-    
-    updateAgeAndCountdown();
-    checkNepaliBirthday();
-    loadMemories();
-</script>
-</body>
-</html>
+        // Exact 12:00 AM Midnight Target for Bhadra 13 (Aug 29)
+        const nepaliBhadra13Dates = { 2024: {m:7, d:29}, 2025: {m:7, d:29}, 2026: {m:7, d:29}, 2027: {m:7, d:30} };
+        const targetConfig = nepaliBhadra13Dates[currentYear] || {m: 7, d: 29};
+        
+        let thisYearBirthday = new Date(currentYear, targetConfig
